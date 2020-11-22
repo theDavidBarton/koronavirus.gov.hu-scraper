@@ -1,0 +1,10 @@
+{
+  "license": "MIT",
+  "dependencies": {
+    "json2csv": "^5.0.5",
+    "puppeteer": "^5.2.1"
+  },
+  "engines": {
+    "node": "12.x"
+  }
+}
