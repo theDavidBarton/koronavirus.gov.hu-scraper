@@ -1,0 +1,1 @@
+# koronavirus.gov.hu-scraper
