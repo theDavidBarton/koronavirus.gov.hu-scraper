@@ -5,6 +5,65 @@ const { Parser } = require('json2csv')
 const runScrape = async () => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
+  // daily statistics
+  await page.goto('https://koronavirus.gov.hu')
+  const activeCapitalValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-fertozott-pest'))[0]
+  )
+  const activeCountrySideValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-fertozott-videk'))[0]
+  )
+  const recoveredCapitalValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-gyogyult-pest'))[0]
+  )
+  const recoveredCountrySideValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-gyogyult-videk'))[0]
+  )
+  const deceasedCapitalValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-elhunyt-pest'))[0]
+  )
+  const deceasedCountrySideValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-elhunyt-videk'))[0]
+  )
+  const inQuarantineValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-karantenban'))[0]
+  )
+  const testedforCOVID19Value = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-mintavetel'))[0]
+  )
+  const dateValueRaw = await page.evaluate(
+    el => el.innerText,
+    (await page.$x('//*[contains(text(),"Legutolsó frissítés dátuma:")]'))[0]
+  )
+  const dateValue = new Date(Date.parse(dateValueRaw))
+    .toLocaleDateString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+    .replace(/\.\s/g, '.')
+
+  const daily = {
+    date: dateValue,
+    activeCapital: activeCapitalValue,
+    activeCountrySide: activeCountrySideValue,
+    activeSum: activeCapitalValue + activeCountrySideValue,
+    recoveredCapital: recoveredCapitalValue,
+    recoveredCountrySide: recoveredCountrySideValue,
+    recoveredSum: recoveredCapitalValue + recoveredCountrySideValue,
+    deceasedCapital: deceasedCapitalValue,
+    deceasedCountrySide: deceasedCountrySideValue,
+    deceasedSum: deceasedCapitalValue + deceasedCountrySideValue,
+    inQuarantine: inQuarantineValue,
+    testedforCOVID19: testedforCOVID19Value
+  }
+  console.log(daily) // TODO: schedule automatic data collection and save it to MongoDB
+
+  // statistics about Hungarian victims
   const obj = []
 
   await page.goto('https://koronavirus.gov.hu/elhunytak')
