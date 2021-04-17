@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
 const { Parser } = require('json2csv')
+const { mongoDbCreate, mongoDbCreateMany } = require('./lib/mongoUtils')
 
 const runScrape = async () => {
   const browser = await puppeteer.launch()
@@ -61,7 +62,8 @@ const runScrape = async () => {
     inQuarantine: inQuarantineValue,
     testedforCOVID19: testedforCOVID19Value
   }
-  console.log(daily) // TODO: schedule automatic data collection and save it to MongoDB
+  if (process.env.GITHUB_ACTIONS) await mongoDbCreate(daily)
+  console.log(daily)
 
   // statistics about Hungarian victims
   const obj = []
@@ -82,11 +84,15 @@ const runScrape = async () => {
           (await page.$$('.views-field-field-elhunytak-alapbetegsegek'))[j]
         )
         const actual = {
-          id: idValue,
+          _id: parseInt(idValue),
           gender: genderValue,
-          age: ageValue,
+          age: parseInt(ageValue),
           conditions: conditionsValue
         }
+        // there are two victims with id 1762, later it will require correct duplicate research with lodash
+        // as it is obviously unmaintainable
+        if (parseInt(idValue) === 1762 && parseInt(ageValue) === 59) actual._id += 0.5
+
         console.log(actual)
         obj.push(actual)
       } catch (e) {
@@ -95,15 +101,18 @@ const runScrape = async () => {
     }
   }
 
-  fs.writeFileSync('result.json', JSON.stringify(obj))
-  console.log('result.json saved')
+  if (!process.env.GITHUB_ACTIONS) fs.writeFileSync('result.json', JSON.stringify(obj))
   await browser.close()
+
+  try {
+    if (process.env.GITHUB_ACTIONS) await mongoDbCreateMany(obj)
+  } catch (e) {
+    console.error(e)
+  }
   try {
     const json2csvParser = new Parser()
     const csv = json2csvParser.parse(obj)
-
-    fs.writeFileSync('result.csv', csv)
-    console.log('result.csv saved')
+    if (!process.env.GITHUB_ACTIONS) fs.writeFileSync('result.csv', csv)
   } catch (e) {
     console.error(e)
   }
