@@ -1,0 +1,23 @@
+name: automerge
+on:
+  pull_request:
+    branches:
+      - 'update-data-**'
+  check_suite:
+    types:
+      - completed
+  status: {}
+jobs:
+  automerge-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Automerge update
+        uses: "pascalgn/automerge-action@v0.13.1"
+        env:
+          GITHUB_TOKEN: "${{ secrets.PAT }}"
+          MERGE_COMMIT_MESSAGE: "pull-request-title"
+          MERGE_METHOD: "squash"
+          MERGE_RETRIES: "3"
+
+          MERGE_DELETE_BRANCH: true
+          MERGE_LABELS: ''
