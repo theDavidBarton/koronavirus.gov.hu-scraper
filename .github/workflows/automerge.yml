@@ -1,6 +1,6 @@
 name: automerge
 on:
-  pull_request:
+  push:
     branches:
       - 'update-data-**'
   check_suite:
