@@ -101,7 +101,7 @@ const runScrape = async () => {
     }
   }
 
-  if (!process.env.GITHUB_ACTIONS) fs.writeFileSync('result.json', JSON.stringify(obj))
+  fs.writeFileSync('result.json', JSON.stringify(obj))
   await browser.close()
 
   try {
@@ -112,7 +112,7 @@ const runScrape = async () => {
   try {
     const json2csvParser = new Parser()
     const csv = json2csvParser.parse(obj)
-    if (!process.env.GITHUB_ACTIONS) fs.writeFileSync('result.csv', csv)
+    fs.writeFileSync('result.csv', csv)
   } catch (e) {
     console.error(e)
   }

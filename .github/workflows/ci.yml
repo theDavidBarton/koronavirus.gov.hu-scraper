@@ -1,0 +1,15 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'update-data-**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check csv file
+        run: '(test -f result.csv && echo result.csv exists) || echo result.csv does not exist'
+      - name: Check json file
+        run: '(test -f result.json && echo result.json exists) || echo result.json does not exist'
