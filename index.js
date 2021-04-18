@@ -91,7 +91,7 @@ const runScrape = async () => {
         }
         // there are two victims with id 1762, later it will require correct duplicate research with lodash
         // as it is obviously unmaintainable
-        if (parseInt(idValue) === 1762 && parseInt(ageValue) === 59) actual._id += 0.5
+        if (parseInt(idValue) === 1762 && parseInt(ageValue) === 59) actual._id += 1
 
         console.log(actual)
         obj.push(actual)
