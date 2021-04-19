@@ -9,8 +9,8 @@ on:
   status: {}
 jobs:
   automerge-update:
+    if: ${{ github.event.label.name == 'data-update' && github.event.label.name == 'automated pr' }}
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'data-update' && github.event.label.name == 'automated pr'
     steps:
       - name: Automerge update
         uses: "pascalgn/automerge-action@v0.13.1"
