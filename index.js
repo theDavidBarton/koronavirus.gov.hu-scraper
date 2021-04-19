@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
 const { Parser } = require('json2csv')
-const { mongoDbCreate, mongoDbCreateMany } = require('./lib/mongoUtils')
+const { mongoDbCreate, mongoDbCreateMany, mongoDbFindCollection } = require('./lib/mongoUtils')
 
 const runScrape = async () => {
   const browser = await puppeteer.launch()
@@ -101,18 +101,34 @@ const runScrape = async () => {
     }
   }
 
+  // create data of victims
   fs.writeFileSync('result.json', JSON.stringify(obj))
   await browser.close()
+
+  // create daily data from DB
+  const dailyResult = await mongoDbFindCollection('covid_19_hungary')
+  fs.writeFileSync('dailyResult.json', JSON.stringify(dailyResult))
 
   try {
     if (process.env.GITHUB_ACTIONS) await mongoDbCreateMany(obj)
   } catch (e) {
     console.error(e)
   }
+
+  // victim data to CSV
   try {
     const json2csvParser = new Parser()
     const csv = json2csvParser.parse(obj)
     fs.writeFileSync('result.csv', csv)
+  } catch (e) {
+    console.error(e)
+  }
+
+  // daily data to CSV
+  try {
+    const json2csvParser = new Parser()
+    const csv = json2csvParser.parse(dailyResult)
+    fs.writeFileSync('dailyResult.csv', csv)
   } catch (e) {
     console.error(e)
   }
