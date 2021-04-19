@@ -9,7 +9,7 @@ on:
   status: {}
 jobs:
   automerge-update:
-    if: "github.event.label.name == 'automated pr'"
+    if: ${{ startsWith(github.event.pull_request.title, 'feat(data)') }}
     runs-on: ubuntu-latest
     steps:
       - name: Automerge update
