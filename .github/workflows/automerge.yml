@@ -9,7 +9,7 @@ on:
   status: {}
 jobs:
   automerge-update:
-    if: ${{ startsWith(github.event.pull_request.title, 'feat(data)') }}
+    # if: ${{ startsWith(github.event.pull_request.title, 'feat(data)') }}
     runs-on: ubuntu-latest
     steps:
       - name: Automerge update
