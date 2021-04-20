@@ -12,7 +12,7 @@ const runScrape = async () => {
     el => parseInt(el.innerText.replace(/\s/g, '')),
     (await page.$$('#content-fertozott-pest'))[0]
   )
-  const activeCountrySideValue = await page.evaluate(
+  const activeCountrysideValue = await page.evaluate(
     el => parseInt(el.innerText.replace(/\s/g, '')),
     (await page.$$('#content-fertozott-videk'))[0]
   )
@@ -20,7 +20,7 @@ const runScrape = async () => {
     el => parseInt(el.innerText.replace(/\s/g, '')),
     (await page.$$('#content-gyogyult-pest'))[0]
   )
-  const recoveredCountrySideValue = await page.evaluate(
+  const recoveredCountrysideValue = await page.evaluate(
     el => parseInt(el.innerText.replace(/\s/g, '')),
     (await page.$$('#content-gyogyult-videk'))[0]
   )
@@ -28,7 +28,7 @@ const runScrape = async () => {
     el => parseInt(el.innerText.replace(/\s/g, '')),
     (await page.$$('#content-elhunyt-pest'))[0]
   )
-  const deceasedCountrySideValue = await page.evaluate(
+  const deceasedCountrysideValue = await page.evaluate(
     el => parseInt(el.innerText.replace(/\s/g, '')),
     (await page.$$('#content-elhunyt-videk'))[0]
   )
@@ -39,6 +39,10 @@ const runScrape = async () => {
   const testedforCOVID19Value = await page.evaluate(
     el => parseInt(el.innerText.replace(/\s/g, '')),
     (await page.$$('#content-mintavetel'))[0]
+  )
+  const vaccinatedValue = await page.evaluate(
+    el => parseInt(el.innerText.replace(/\s/g, '')),
+    (await page.$$('#content-beoltottak'))[0]
   )
   const dateValueRaw = await page.evaluate(
     el => el.innerText,
@@ -51,16 +55,17 @@ const runScrape = async () => {
   const daily = {
     date: dateValue,
     activeCapital: activeCapitalValue,
-    activeCountrySide: activeCountrySideValue,
-    activeSum: activeCapitalValue + activeCountrySideValue,
+    activeCountryside: activeCountrysideValue,
+    activeSum: activeCapitalValue + activeCountrysideValue,
     recoveredCapital: recoveredCapitalValue,
-    recoveredCountrySide: recoveredCountrySideValue,
-    recoveredSum: recoveredCapitalValue + recoveredCountrySideValue,
+    recoveredCountryside: recoveredCountrysideValue,
+    recoveredSum: recoveredCapitalValue + recoveredCountrysideValue,
     deceasedCapital: deceasedCapitalValue,
-    deceasedCountrySide: deceasedCountrySideValue,
-    deceasedSum: deceasedCapitalValue + deceasedCountrySideValue,
+    deceasedCountryside: deceasedCountrysideValue,
+    deceasedSum: deceasedCapitalValue + deceasedCountrysideValue,
     inQuarantine: inQuarantineValue,
-    testedforCOVID19: testedforCOVID19Value
+    testedforCOVID19: testedforCOVID19Value,
+    vaccinated: vaccinatedValue
   }
   if (process.env.GITHUB_ACTIONS) await mongoDbCreate(daily)
   console.log(daily)
@@ -89,8 +94,8 @@ const runScrape = async () => {
           age: parseInt(ageValue),
           conditions: conditionsValue
         }
-        // there are two victims with id 1762, later it will require correct duplicate research with lodash
-        // as it is obviously unmaintainable
+        // there are two victims with id 1762, later it will require correct duplicate handling with lodash
+        // as it is obviously an unmaintainable workaround
         if (parseInt(idValue) === 1762 && parseInt(ageValue) === 59) actual._id += 1
 
         console.log(actual)
