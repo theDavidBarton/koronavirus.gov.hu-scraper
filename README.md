@@ -16,7 +16,7 @@ export MONGO_PASSWORD="********"
 ```
 
 ```bash
-sourece app.env
+source app.env
 ```
 
 Run the sraper with Node.js:
