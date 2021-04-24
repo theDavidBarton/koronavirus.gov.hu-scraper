@@ -12,6 +12,10 @@ jobs:
     # if: ${{ startsWith(github.event.pull_request.title, 'feat(data)') }}
     runs-on: ubuntu-latest
     steps:
+      - name: PR title
+        run: |
+          echo "It's ${{ github.event.pull_request.title }}"
+          echo "It's ${{ github.event }}"
       - name: Automerge update
         uses: "pascalgn/automerge-action@v0.13.1"
         env:
