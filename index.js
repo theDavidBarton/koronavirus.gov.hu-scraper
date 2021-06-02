@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
+const _ = require('lodash')
 const { Parser } = require('json2csv')
 const { mongoDbCreate, mongoDbCreateMany, mongoDbFindCollection } = require('./lib/mongoUtils')
 
@@ -77,37 +78,41 @@ const runScrape = async () => {
   const lastPage = await page.evaluate(el => el.href.match(/\d+/), (await page.$$('.pager-last > a'))[0])
 
   for (let i = 0; i < parseInt(lastPage[0]) + 1; i++) {
-    await page.goto('https://koronavirus.gov.hu/elhunytak?page=' + i)
-    const count = await page.$$eval('.views-field-field-elhunytak-sorszam', el => el.length)
-    for (let j = 1; j < count; j++) {
-      try {
-        const idValue = await page.evaluate(el => el.innerText, (await page.$$('.views-field-field-elhunytak-sorszam'))[j])
-        const genderValue = await page.evaluate(el => el.innerText, (await page.$$('.views-field-field-elhunytak-nem'))[j])
-        const ageValue = await page.evaluate(el => el.innerText, (await page.$$('.views-field-field-elhunytak-kor'))[j])
-        const conditionsValue = await page.evaluate(
-          el => el.innerText,
-          (await page.$$('.views-field-field-elhunytak-alapbetegsegek'))[j]
-        )
-        const actual = {
-          _id: parseInt(idValue),
-          gender: genderValue,
-          age: parseInt(ageValue),
-          conditions: conditionsValue
-        }
-        // there are two victims with id 1762, later it will require correct duplicate handling with lodash
-        // as it is obviously an unmaintainable workaround
-        if (parseInt(idValue) === 1762 && parseInt(ageValue) === 59) actual._id += 1
+    try {
+      await page.goto('https://koronavirus.gov.hu/elhunytak?page=' + i)
+      const count = await page.$$eval('.views-field-field-elhunytak-sorszam', el => el.length)
+      for (let j = 1; j < count; j++) {
+        try {
+          const idValue = await page.evaluate(el => el.innerText, (await page.$$('.views-field-field-elhunytak-sorszam'))[j])
+          const genderValue = await page.evaluate(el => el.innerText, (await page.$$('.views-field-field-elhunytak-nem'))[j])
+          const ageValue = await page.evaluate(el => el.innerText, (await page.$$('.views-field-field-elhunytak-kor'))[j])
+          const conditionsValue = await page.evaluate(
+            el => el.innerText,
+            (await page.$$('.views-field-field-elhunytak-alapbetegsegek'))[j]
+          )
+          const actual = {
+            _id: parseInt(idValue),
+            gender: genderValue,
+            age: parseInt(ageValue),
+            conditions: conditionsValue
+          }
 
-        console.log(actual)
-        obj.push(actual)
-      } catch (e) {
-        console.error(e)
+          console.log(actual)
+          obj.push(actual)
+        } catch (e) {
+          console.error(e)
+        }
       }
+    } catch (e) {
+      console.error(e)
     }
   }
 
+  // filter duplicates:
+  const uniqObj = _.uniqBy(obj, '_id')
+
   // create data of victims
-  fs.writeFileSync('result.json', JSON.stringify(obj))
+  fs.writeFileSync('result.json', JSON.stringify(uniqObj))
   await browser.close()
 
   // create daily data from DB
@@ -115,7 +120,7 @@ const runScrape = async () => {
   fs.writeFileSync('dailyResult.json', JSON.stringify(dailyResult))
 
   try {
-    if (process.env.GITHUB_ACTIONS) await mongoDbCreateMany(obj)
+    if (process.env.GITHUB_ACTIONS) await mongoDbCreateMany(uniqObj)
   } catch (e) {
     console.error(e)
   }
@@ -123,7 +128,7 @@ const runScrape = async () => {
   // victim data to CSV
   try {
     const json2csvParser = new Parser()
-    const csv = json2csvParser.parse(obj)
+    const csv = json2csvParser.parse(uniqObj)
     fs.writeFileSync('result.csv', csv)
   } catch (e) {
     console.error(e)
