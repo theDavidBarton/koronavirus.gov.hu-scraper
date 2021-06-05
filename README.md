@@ -2,7 +2,7 @@
 
 Data source: https://koronavirus.gov.hu/
 
-Scraped data: [Google Sheets](https://docs.google.com/spreadsheets/d/15qn3VUl0H-C5ePOG3EtX4N2ZGe0j4BMqJvJIoBm1PqI/edit#gid=0)
+Scraped data: [Google Sheets](https://docs.google.com/spreadsheets/d/15qn3VUl0H-C5ePOG3EtX4N2ZGe0j4BMqJvJIoBm1PqI/edit#gid=2114569011)
 
 ## Script running
 
