@@ -1,4 +1,7 @@
 "_id","gender","age","conditions"
+30045,"Férfi",78,"cukorbetegség, Parkinson-kór, magasvérnyomás-betegség"
+30044,"Nő",75,"magasvérnyomás-betegség, iszkémiás szívbetegség, krónikus obstruktív tüdőbetegség"
+30043,"Nő",47,"túlsúly, cukorbetegség, pajzsmirigy-betegség"
 30042,"Nő",92,"magasvérnyomás-betegség, cukorbetegség, demencia"
 30041,"Férfi",65,"magasvérnyomás-betegség, cukorbetegség, magas koleszterinszint, daganatos megbetegedés"
 30040,"Férfi",57,"nem ismert alapbetegség"
