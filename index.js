@@ -46,7 +46,7 @@ const runScrape = async () => {
     (await page.$$('#content-beoltottak'))[0]
   )
   const dateValueRaw = await page.evaluate(
-    el => el.innerText,
+    el => el.innerText.match(/[2][0][2][2-9]\.[0-9][0-9]\.[0-9][0-9]\./)[0],
     (await page.$x('//*[contains(text(),"Legutolsó frissítés dátuma:")]'))[0]
   )
   const dateValue = new Date(Date.parse(dateValueRaw))
