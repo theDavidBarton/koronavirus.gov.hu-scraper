@@ -14,12 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-      - name: Use Node.js 12.x
+        id: date        
+        run: echo "{date}=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 16.x
       - name: Install project
         run: yarn
       - name: Run main script

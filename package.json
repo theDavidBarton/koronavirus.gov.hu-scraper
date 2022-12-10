@@ -7,6 +7,6 @@
     "puppeteer": "^5.3.0"
   },
   "engines": {
-    "node": "12.x"
+    "node": "16.x"
   }
 }
